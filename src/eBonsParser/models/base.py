@@ -202,7 +202,13 @@ class Store(BaseModel,ABC):
         """
         ebon_match = re.search(r"\bBon-Nr\.?|Beleg-Nr\.?:?\s*(\d{1,10})\b", raw_text)
         if ebon_match:
-            return ebon_match.group(1).strip()
+            if ebon_match.group(1):
+                value = ebon_match.group(1).strip()
+            elif ebon_match.group(2):
+                value = ebon_match.group(2).strip()
+            else:
+                value = None
+            return value
         else:
             raise ValueError("Bon Number not found in the receipt text.")  
 
