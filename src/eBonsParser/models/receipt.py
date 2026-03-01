@@ -11,4 +11,5 @@ class Receipt(BaseModel):
     date: date
     total: float
     payment_method: PaymentMethod
+    rewe_bonus: float | None
     items: List[Item]
