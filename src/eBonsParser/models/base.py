@@ -200,7 +200,7 @@ class Store(BaseModel,ABC):
         """
         Extracts Bon Number from the raw text of the receipt.
         """
-        ebon_match = re.search(r"\bBon-Nr\.?|Beleg-Nr\.?:?\s*(\d{1,10})\b", raw_text)
+        ebon_match = re.search(r"\bBon-Nr\.?:?\s*(\d{1,10})|Beleg-Nr\.?:?\s*(\d{1,10})\b", raw_text)
         if ebon_match:
             return ebon_match.group(1).strip()
         else:
