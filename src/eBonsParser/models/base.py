@@ -206,6 +206,18 @@ class Store(BaseModel,ABC):
         else:
             raise ValueError("Bon Number not found in the receipt text.")  
 
+    def _REWEbonus_extract(self, raw_text: str) -> float:
+        """
+        Extracts the amount saved by using REWE bonus from the receipt
+        """
+        bonus_match  = re.search(r"\bdu\s*(\d+(,\d{2}))\s*EUR(\\n|\s*)REWE\s*Bonus\b", raw_text)
+        if bonus_match:
+            normalized_value = re.sub(r"(\d+),(\d{2})", r"\1.\2",bonus_match.group(1)).strip()
+            return float(normalized_value)
+
+        else:
+            return None
+
     def parse_ebon(self, ebon_pdf):
         from eBonsParser.models.receipt import Receipt  
         """
@@ -216,6 +228,7 @@ class Store(BaseModel,ABC):
         self.phone = self._phone_extract(ebon_text)
         self.UID = self._uid_extract(ebon_text)
         ebonNr = self._bonNr_extract(ebon_text)
+        bonus_amount = self._REWEbonus_extract(ebon_text)
         listed_ebon = ebon_text.splitlines()
         items = self._items_extract(listed_ebon)
         total = self._sum_extract(ebon_text)
@@ -227,5 +240,6 @@ class Store(BaseModel,ABC):
             items=items,
             total=total,
             payment_method=payment_method,
+            rewe_bonus=bonus_amount,
             date=date
         )
